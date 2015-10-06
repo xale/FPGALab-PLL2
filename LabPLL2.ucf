@@ -1,0 +1,240 @@
+# ucf for XSA-3S1000/xst3 Board
+# -  9/30/08 - ***NOTE: this file set up for XSA3S/xst3 board and xess dwnldpar CPLD interface.
+# WARNING! - ALL pins in the configuration options must be floated for this board!
+# Warning: Do Not Mix Case in any Keywords in this file (e.g. LOC)
+# Comment or uncomment lines as required with the # sign.
+# Failure to comment out an unused signal LOC will cause the implementation step to fail.
+# Failure to un-comment a used signal LOC will cause your project to malfunction.
+#
+##============== Timimg constraint Examples ==================== 
+#NOTE references to vectors must use wildcard or explicit subscripts
+#TIMEGRP RFFS = RISING FFS ("*");  # examples:  creates a rising group called RFFS 
+#TIMEGRP FFFS = FALLING FFS ("*");  # creates a falling group called FFFS  
+#TIMESPEC TSR2F  = FROM : RFFS  : TO : FFFS  : 10 ns; # time spec rising edge to falling edge 
+#TIMESPEC TSF2R  = FROM : FFFS  : TO : RFFS  : 10 ns; # falling edge to rising edge
+#TIMESPEC TSF2P  = FROM : FFS   : TO : PADS   : 20 ns; # Flip-flips to pads
+#NET my_net TNM_NET = logic_grp ;  #creates a net group. Examples: 
+# Global net constraints:
+#NET mclk PERIOD= 90 ns;	   
+#NET mclk MAXSKEW = 1 ns;
+#Create a delay constraint for a group of internal paths: 
+#NET "ddssot/sin*" TNM_NET = MULTIN; #Adds a net to group MULTIN. note vects must use wildcard or explicit subscripts
+#NET "ddssot/cos*" TNM_NET = MULTIN; #Adds another vector net to timegroup
+#TIMEGRP MULTOUT = FFS("prod*");     #defines a group from vector signal in FF's.
+#TIMESPEC TSMUL = FROM MULTIN TO MULTOUT 60 ns;	#NOTE time spec name must start with "TS"
+##===============Timing Constraints ================================
+#net sig_out FAST; 	#Fast slew can only be specified for output or bidirectional
+net clk100 PERIOD= 10 ns;    #As a general rule we always apply this constraint on the ext master clock
+#net clk50 PERIOD= 20 ns;	
+#net masterclk PERIOD= 20ns;
+#TIMESPEC TSF2F  = FROM : FFS   : TO : FFS   : 20 ns; # Flip-flips with the same edge
+#=================================================================
+
+#======clock inputs========================================
+net clk100   loc=T9;		# 100 Mhz external clock from oscillator 
+#net clk50     loc=P8;		# 50 Mhz clk from CPLD  - XST header p11
+#net clkc     loc=R9;		# Ethernet chip clk drives this pin - XST header p64
+
+##=======Parallel port interface===============================
+#net pps<3>	   	loc=N5;	# pps(5:3) shared with flash addr
+#net pps<4>		loc=K14;  	 
+#net pps<5>		loc=K13;    
+#net pps<6>		loc=T10;	# pps6 on pin-T10 wired directly to PC port-S	
+#net pps6	    loc=T10;
+
+##portd(1) is no longer part of portD200 interface.
+#net ppd<0> 	loc=N14;	#new ppd(4 downto 0) is actually portd(5 4 3 2 0)
+#net ppd<1> 	loc=R16;
+#net ppd<2> 	loc=P14;
+#net ppd<3> 	loc=P13;
+#net ppd<4> 	loc=N12;
+##-----------------------
+#net ppd<6>  	loc=T14;	#these 2 not used with dnldpar200 interface
+#net ppd<7>  	loc=R13;
+##----------------------
+#net ppdclk   	loc=P15;	#inverted portd(1)
+#net ppc0  		loc=R11;	#inverted ppc0 wired directly to 3S1000 R11
+
+#===== XSA-3S1000 board resources========================================
+##These sw's never used except for flash configuration
+#net dsw1<1> 	loc=K4;	# xsa dipsw's 
+#net dsw1<2> 	loc=K3; 
+#net dsw1<3> 	loc=K2; 
+#net dsw1<4> 	loc=J4; 
+#net xsasw2 	loc=E11;  	# xsa active-low pushbutton
+#net xsasw3 	loc=A13;  	# xsa active-low pushbutton
+#-------------------------------
+#net xs<0>   loc=M6;		# xsa LED 
+#net xs<1>   loc=M11; 
+#net xs<2>   loc=N6; 
+#net xs<3>   loc=R7; 
+#net xs<4>   loc=P10; 
+#net xs<5>   loc=T7; 
+#net xs<6>   loc=R10;
+##---XSA PS/2 interface---------	
+#net ps2_dat 	loc=E13;  	
+#net ps2_clk	loc=B16;
+##---XSA VGA drive--------------
+#net hsyncb 	loc=B7;	# horizontal sync signal.
+#net vsyncb 	loc=D8; # vertical sync signal. 
+#net rgb<0> 	loc=C9;	# pixel 3-bit r-g-b values		
+#net rgb<1> 	loc=E7;
+#net rgb<2> 	loc=D5;
+#net rgb<3> 	loc=A8;
+#net rgb<4> 	loc=A5;  	 
+#net rgb<5> 	loc=C3;
+#net rgb<6>  	loc=C8;
+#net rgb<7>  	loc=D6;  	 
+#net rgb<8>  	loc=B1;  
+# 
+#=====XST-3 card resources============================================
+#---- XST-3 right led digit segments (active HI)
+#net rs<0>   	loc=F2; 	# D segment
+#net rs<1>   	loc=F3;		# C
+#net rs<2>   	loc=G4;  	# E 
+#net rs<3>   	loc=G1;    	# G
+#net rs<4>   	loc=E1;   	# B
+#net rs<5>   	loc=G3;		# F
+#net rs<6>   	loc=E2;		# A
+#net rsdp     	loc=H4;  	#right dec. pt. shared with sw1 
+#
+#----- XST-3 left led digit segments (active high)----------------
+#net ls<0>   	loc=N3;	
+#net ls<1>   	loc=P1;
+#net ls<2>   	loc=M15;
+#net ls<3>    	loc=G16;
+#net ls<4>   	loc=M4;
+#net ls<5>   	loc=H13;
+#net ls<6>     	loc=H14;
+net lsdp   		loc=N15; 	 # left dec. pt
+#net xsled	 	loc=M6;	    #alive signal to xsa led segment-0 when jtag interface
+#
+#--xst-3 bargraph led segments. -------
+#net bg<9> 		loc=J14;
+#net bg<8>  	loc=J16;
+#net bg<7>   	loc=H15;  	 
+#net bg<6>   	loc=J13;  	  
+#net bg<5>   	loc=L15;  	  
+#net bg<4>   	loc=T13;
+#net bg<3>   	loc=N1;
+#net bg<2>   	loc=M3;  	# shared with SW4
+#net bg<1>   	loc=N2;  	# shared with SW3
+#net bg<0>   	loc=L5;  	# shared with SW2
+#net bg0 		loc=L5;  	# Use this type entry for individual bg elements.
+#net bg8  		loc=J16; 	  
+#net bg9  		loc=J14;	
+
+#---misc sw's, aux IO pins, etc (all PB's active low)----------------
+# general purpose I/O may be selected from:
+#   header pins 7(G15),8(G14),12(G12),14(E16),18(E15),19(D16),20(E14),25(D1),26(F4),31(G5),41(J2)
+#Note that the fast slew and drive properties only apply when the pin is used for output.
+#net sig1		loc=E15 | SLEW=FAST | DRIVE=24; 	#auxilliary signal out proto H18 on xst3
+net sig2		loc=D16 | SLEW=FAST | DRIVE=24;   	#auxilliary signal out proto H19
+#net sig3		loc=E14; 	#auxilliary general purpose input proto H20 
+net sig4		loc=F4;  	#auxilliary general purpose IO proto H26
+net sig5	   	loc=E16;  	#auxilliary general purpose IO proto H14.
+net sw1  		loc=H4; 	# xst-3 PB1 pushbutton (also rsdp)
+#net sw2  		loc=L5; 	# xst-3 PB2 pushbutton (also bg1)
+#net sw3  		loc=N2; 	# xst-3 PB3 pushbutton (also bg2) 
+#net sw4  		loc=M3; 	# xst-3 PB4 pushbutton (also bg3) 
+net swrst      	loc=D15; 	# xst-3 RESET pushbutton   
+net fceb     	loc=R4; 	#flash not-chip enable. Force high to disable flash.
+#net alive	 	loc=M6;	   #heartbeat signal to xsa led segment-0
+
+#------xst-3  DIP switches (active low) --------------------------
+#net dipsw1 	loc=P12;    	# Dipsw's shared with PBUS-D0:D7
+#net dipsw2 	loc=J1;      	#
+#net dipsw3 	loc=H1;    	 	# 
+#net dipsw4 	loc=H3;    		#
+#net dipsw5 	loc=G2;   		#
+#net dipsw6 	loc=K15;  		#
+#net dipsw7 	loc=K16;    	#
+#net dipsw8  	loc=F15;
+
+##---Connections for Codec I/O to ADC/DAC---
+#net sdout   	loc=K5;		# This signal not used with out-only interface.
+#net mclk    	loc=P11;		# Codec pins not shared on xstend-3 	
+#net lrck      	loc=R12;
+#net sdin     	loc=M10;
+#net serclk   	loc=T12;
+
+##---Connections for Xst-3 USB interface  -----------------------	
+#net sda   		loc=D2;  	#I2C data (proto p24)
+#net scl  		loc=F5; 	#I2C clock (proto p23)
+#net susp   	loc=L3; 	#
+#net intr  		loc=J13; 	#
+
+##---Connections to RS232 interface --------------------------
+# set xst jumpers for straight thru
+#net cts 		loc=D1;  	#proto pin 25
+#net rd 		loc=G5;   	#proto pin 31
+#net rts 		loc=F4;   	#proto pin 26
+#net td 		loc=J2;   	#proto pin 41
+
+#----LCD module connected to proto-header.------------------------
+#  All shared with right LED with old xstend-2 plug location
+# New locs TBD. These are temporary. Plan to connect through IDE or Slots header with a cable.
+#net lcdctl<5> 	loc=H3; 	#LCD DB7. 	Note: plug-in pin8 goes to lcd(5)=pinH3=proto p38		
+#net lcdctl<4> 	loc=H1; 	#LCD DB6  	proto-39
+#net lcdctl<3> 	loc=J1;  	#LCD DB5 	proto-40
+#net lcdctl<2> 	loc=K1; 	#LCD DB4 	proto-43
+#net lcdctl<1> 	loc=L2; 	#LCD ENB  	proto-44 
+#net lcdctl<0> 	loc=K5; 	#LCD RS  	proto-45
+#Alternate set using IDE, usb,ether pins on xst-3
+#net lcdctl<5> 	loc=J3; 	#LCD DB7. 	Note: plug-in pin8 goes to lcd(5)=pinJ3=proto p42		
+#net lcdctl<4> 	loc=K1; 	#LCD DB6  	proto-43
+#net lcdctl<3> 	loc=L2;  	#LCD DB5 	proto-44
+#net lcdctl<2> 	loc=M1; 	#LCD DB4 	proto-47
+#net lcdctl<1> 	loc=M2; 	#LCD ENB  	proto-48 
+#net lcdctl<0> 	loc=L4; 	#LCD RS  	proto-49
+
+#==============================================================================
+##---Connections for XSA synchronous DRAM ---------------
+#inst "uramctl/dllext" loc=DLL0;	# These only needed for 50Mhz external clock.
+#inst "uramctl/clk1x_buf" loc=GCLKBUF3;
+#inst "uramctl/dllint" loc=DLL3;
+#inst  rst_int   init=S;	# NOT USED. initialize internal sdramctl reset for power-on wait.
+#----------------------------------
+#net sclkfb    loc=E10;  # feedback SDRAM clock after PCB delays
+#net sclk      loc=N8;   # clock to SDRAM
+#net cke       loc=D7;   # SDRAM clock enable
+#net cs_n      loc=B8;   # SDRAM /chip-select
+#net ras_n     loc=A9;  
+#net cas_n     loc=A10;  
+#net we_n      loc=B10;  
+#net dqmh      loc=D9;  
+#net dqml      loc=C10;
+#net ba<0>     loc=A7;  
+#net ba<1>     loc=C7;
+  
+#net sdat<0>   loc=C15;  
+#net sdat<1>   loc=D12;  
+#net sdat<2>   loc=A14;  
+#net sdat<3>   loc=B13;  
+#net sdat<4>   loc=D11;  
+#net sdat<5>   loc=A12;  
+#net sdat<6>   loc=C11;  
+#net sdat<7>   loc=D10;  
+#net sdat<8>   loc=B11;  
+#net sdat<9>   loc=B12;  
+#net sdat<10>  loc=C12;  
+#net sdat<11>  loc=B14;  
+#net sdat<12>  loc=D14;  
+#net sdat<13>  loc=C16;  
+#net sdat<14>  loc=F12;  
+#net sdat<15>  loc=F13;
+  
+#net saddr<0>  loc=B5;  
+#net saddr<1>  loc=A4; 
+#net saddr<2>  loc=B4;  
+#net saddr<3>  loc=E6;  
+#net saddr<4>  loc=E3;  
+#net saddr<5>  loc=C1;  
+#net saddr<6>  loc=E4;  
+#net saddr<7>  loc=D3;  
+#net saddr<8>  loc=C2;  
+#net saddr<9>  loc=A3;  
+#net saddr<10> loc=B6;  
+#net saddr<11> loc=C5;  
+#net saddr<12> loc=C6; 
+#===================================================
